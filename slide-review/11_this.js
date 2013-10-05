@@ -1,0 +1,1 @@
+global always unless defined in object
