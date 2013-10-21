@@ -1,0 +1,1 @@
+there are no namespaces, so we jut use objects

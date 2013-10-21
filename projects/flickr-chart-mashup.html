@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <title>AJAX example</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script>
+      // to run:
+      //   $ cd <this directory>
+      //   $ python -m SimpleHTTPServer
+      //   # open http://localhost:8000/ajax.html
+        var flickrGraffApp = flickrGraffApp || {};
+        
+        flickrGraffApp = {
+
+          photoUploader         : 0,
+          photoID               : 0,
+          photoIDArray          : [],  // Save list of post ID
+          photoAuthorArray      : [], // Save list of post authors
+          
+          flickrRequestLength   : 0,                       
+          
+          // Returned data          
+          flickrData                  : 0,
+          flickrTotalRequestPages     : 0,
+          flickrTotalRequestItems     : 0,
+          flickrItemsPerPageRequest   : 0,
+
+          // Query related 
+          queryURL              : '',
+          tagName               : 'graffiti',
+          currentRequestPage    : 1,
+          flickrAPIKey          : '8f022d203f5c456a540d5051c1826855',
+          flickrAPIMethod       : 'flickr.photos.search',
+          requestFormat         : 'json',
+          
+          displayLoading        : {
+            init : function(){
+              i = 0;
+              console.log( "Loading ");
+              startTime = new Date().getTime();
+              setTimeout(this.closeConnection, 5000);
+              intervalCount = window.setInterval(this.contentLoading, 150);
+            },
+            closeConnection: function(){
+              if(flickrGraffApp.flickrData === 0){
+                window.clearInterval(intervalCount);
+                console.log('Unable to connect.');
+              }
+            },
+            contentLoading: function(){
+              if( flickrGraffApp.flickrData !== 0 ){
+                window.clearInterval(intervalCount);
+                endTime = new Date().getTime();
+                totalTime = endTime - startTime;
+                console.log('Request made over: '+ totalTime/1000 +' seconds.');
+              } else {
+                i++;
+                var elipse = '.',
+                    displayElipse = [];
+                for (n=0; n<i; n++){
+                  if(displayElipse.length < 7){
+                    displayElipse.push(elipse);
+                  } else {
+                    displayElipse = ['.'];
+                  }
+                }
+                console.clear(); 
+                console.log('Making AJAX request to: '+ flickrGraffApp.queryURL);
+                console.log( "Loading " + displayElipse.join('') ); 
+              }
+            }
+          },
+          getAJAX:        function(){
+            this.flickrData = 0;
+            var that = this;
+            this.queryURL = 'http://api.flickr.com/services/rest/?method='+ this.flickrAPIMethod +'&api_key='+ this.flickrAPIKey +'&tags='+ this.tagName +'&page='+ this.currentRequestPage +'&format='+ this.requestFormat +'&nojsoncallback=1';
+            console.log('Making AJAX request to: '+ this.queryURL);
+            that.displayLoading.init(); // Why doesnt this run on a rerun?
+            $.get(this.queryURL, function(data){
+              
+              // Store flickr response
+              that.flickrData                = data;
+              that.flickrTotalRequestPages   = data.photos.pages;
+              that.flickrTotalRequestItems   = data.photos.total;
+              that.flickrItemsPerPageRequest = data.photos.perpage;
+
+              console.clear(); 
+
+              // Post flickr data to console
+              console.log( 'AJAX request made to: '+ that.queryURL);
+              console.log( 'Queried tag: ' + that.tagName );
+              console.log( 'Total pages: ' + that.flickrTotalRequestPages );
+              console.log( 'Total number of items: ' + that.flickrTotalRequestItems );
+              console.log( 'Total items per page: ' + that.flickrItemsPerPageRequest );
+            });
+          },
+          prepareArray:   function(){
+            for (i = 0; i < this.flickrRequestLength; i++ ){
+              this.photoIDArray.push(this.flickrData[i].id);
+              this.photoAuthorArray.push(this.flickrData[i].owner);
+            }
+          },
+          loadImageURL:   function(photoUploader, photoID){
+            $('#el').append('<img src="http://www.flickr.com/photos/'+photoUploader+'/'+photoID+'/');
+          },
+          processArray:   function(){
+            for (i = 0; i < photoIDArray.length; i++){
+              loadImageURL(this.photoIDArray[i], this.photoAuthorArray[i]);
+            }
+          },
+
+        } 
+    </script>
+  </head>
+  <body>
+    <div id="el">
+      Loading...
+    </div>
+  </body>
+</html>

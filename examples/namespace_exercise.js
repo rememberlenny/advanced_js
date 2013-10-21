@@ -1,4 +1,6 @@
-// EXERCISE: write a namespace() function that takes a period-delimited
+http://jsbin.com/aNUCeg/5/edit?html,js,output
+
+ // EXERCISE: write a namespace() function that takes a period-delimited
 // string of arbitrary length and makes that namespace available globally,
 // without squashing any that were previously-defined.  For example:
 
