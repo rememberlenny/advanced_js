@@ -1,4 +1,3 @@
-
 // JavaScript Document
 var chartjsApp = chartjsApp || {};
 
@@ -12,6 +11,7 @@ chartjsApp = {
   keywordTracker: [],
   ctx: 0,
   myNewChart: 0,
+  isNotMatch: true,
   initialize: function(){
     this.returnedData = 0;
     this.storedKeywords = [];
@@ -42,40 +42,45 @@ chartjsApp = {
   },
   iterateThroughArray: function(){
     var that = this;
-    this.keywordTracker = [];
     $.each(this.storedKeywords, function(i, item){
-
-      if(typeof(that.keywordTracker[item]) === "number" ){ //IF STORED
-
-
-      }else{ //CREATE STORE
-        that.keywordTracker.push(
-          {
-            keyword: item,
-            value: 1,
-            color: "" 
-          }
-        );
+      if(typeof(that.keywordTracker[item]) === "number" ){
+        that.keywordTracker[item] = that.keywordTracker[item]+1;
+      }else{
+        that.keywordTracker[item] = 1;
       }
     });
     console.log(this.keywordTracker);
-    this.generatePieChart();
+    this.convertArrayContentsToObject();
   },
-  checkObjectValue: function(){
+  convertArrayContentsToObject: function(){
     var that = this;
-    $.each(this.keywordTracker, function(j, item){
-      for(i=0; i < that.keywordTracker.length; i++){
-        console.log(item.keyword === that.keywordTracker[i].keyword);
-
-      }
-    })
-    item === this.keywordTracker[i].keyword
-  },
-  generateChartData: function(){
-
+    chartjsApp.storedKeywords = [];
+    _.map(this.keywordTracker, function(value, key){
+      
+      that.storedKeywords.push({ 
+        keyword: key,
+        value: value  
+      });
+    });
+    console.log(this.storedKeywords);
   },
   generatePieChart: function(){
     this.ctx = document.getElementById("myChart").getContext("2d");
     this.myNewChart = new Chart(this.ctx).Pie(data); 
+  },
+  checkObjectValue: function(){
+    var that = this;
+    this.isNotMatch = true;
+    $.each(this.keywordTracker, function(j, item){
+      for(i=0; i < that.keywordTracker.length; i++){
+        if(item.keyword === that.keywordTracker[i].keyword){
+          that.isNotMatch = false;
+          return that.isNotMatch;
+        }
+      }
+    });
+  },
+  generateChartData: function(){
+
   }
 };
