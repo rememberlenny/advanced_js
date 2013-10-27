@@ -12,6 +12,8 @@ chartjsApp = {
   ctx: 0,
   myNewChart: 0,
   isNotMatch: true,
+  colorList: [],
+  numberOfKeywords: 0,
   initialize: function(){
     this.returnedData = 0;
     this.storedKeywords = [];
@@ -52,14 +54,28 @@ chartjsApp = {
     console.log(this.keywordTracker);
     this.convertArrayContentsToObject();
   },
+  generateColors: function(){
+    var that = this;
+    this.numberOfKeywords = Object.keys(that.keywordTracker).length;
+    this.frequency=5/this.numberOfKeywords;
+    for (var k = 0; k < this.numberOfKeywords; ++k){
+      r = Math.floor( Math.sin(this.frequency*k + 0) * (127) + 128);
+      g = Math.floor( Math.sin(this.frequency*k + 2) * (127) + 128);
+      b = Math.floor( Math.sin(this.frequency*k + 4) * (127) + 128);                
+      that.colorList.push('rgb('+r + ','+ g +',' + b+')');
+    };
+
+  },
   convertArrayContentsToObject: function(){
     var that = this;
-    chartjsApp.storedKeywords = [];
-    _.map(this.keywordTracker, function(value, key){
-      
+    this.storedKeywords = [];
+    this.generateColors();
+
+    _.map(this.keywordTracker, function(value, key){      
       that.storedKeywords.push({ 
         keyword: key,
-        value: value  
+        value: value,
+        color: that.colorList[that.storedKeywords.length]  
       });
     });
     console.log(this.storedKeywords);
