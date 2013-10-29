@@ -1,0 +1,22 @@
+.container{
+  width: 900px;
+}
+canvas, ul{
+  display: inline-block;
+  float: left;
+}
+canvas{
+  margin-top:50px;
+}
+ul li{
+  text-transform: capitalize;
+}
+ul{
+  margin-left: 50px;
+  height: 400px;
+  width: 300px;
+  overflow: scroll;
+  border: 5px solid #ddd;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}

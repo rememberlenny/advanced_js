@@ -54,31 +54,33 @@ chartjsApp = {
     console.log(this.keywordTracker);
     this.convertArrayContentsToObject();
   },
-  generateColors: function(){
-    var that = this;
-    this.numberOfKeywords = Object.keys(that.keywordTracker).length;
-    this.frequency=5/this.numberOfKeywords;
-    for (var k = 0; k < this.numberOfKeywords; ++k){
-      r = Math.floor( Math.sin(this.frequency*k + 0) * (127) + 128);
-      g = Math.floor( Math.sin(this.frequency*k + 2) * (127) + 128);
-      b = Math.floor( Math.sin(this.frequency*k + 4) * (127) + 128);                
-      that.colorList.push('rgb('+r + ','+ g +',' + b+')');
-    };
-
-  },
   convertArrayContentsToObject: function(){
     var that = this;
     this.storedKeywords = [];
-    this.generateColors();
-
     _.map(this.keywordTracker, function(value, key){      
+      if( value > 1){
+
       that.storedKeywords.push({ 
         keyword: key,
         value: value,
         color: that.colorList[that.storedKeywords.length]  
       });
+      }
     });
+    that.storedKeywords = that.storedKeywords.sort(that.dynamicSort('-value'));
     this.generatePieChart(this.storedKeywords);
+  },
+  dynamicSort: function(property){
+    // http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
   },
   checkObjectValue: function(){
     var that = this;
@@ -92,18 +94,43 @@ chartjsApp = {
       }
     });
   },
+  printChartedData: function(){
+    var that = this;
+    $.each(this.storedKeywords, function(i, item){
+      var keywordItem = that.storedKeywords[i]['keyword'];
+      var valueItem = that.storedKeywords[i]['value'];
+    });
+    this.generateColors();
+  },
+  generateColors: function(){
+    var that = this;
+    this.numberOfKeywords = Object.keys(that.storedKeywords).length; // The dividing number is blck magic magic
+    this.frequency=5/this.numberOfKeywords;
+    for (var k = 0; k < this.numberOfKeywords; ++k){
+      r = Math.floor( Math.sin(this.frequency*k + 0) * (127) + 128);
+      g = Math.floor( Math.sin(this.frequency*k + 2) * (127) + 128);
+      b = Math.floor( Math.sin(this.frequency*k + 4) * (127) + 128);                
+      that.colorList.push('rgb('+r + ','+ g +',' + b+')');
+    };
+    this.applyColors();
+  },
+  applyColors: function(){
+    var that = this;
+    $.each(this.storedKeywords, function(i, item){
+      that.storedKeywords[i]['color'] = that.colorList[i];
+    });
+    this.appendDataList();
+  },
+  appendDataList: function(){
+    var that = this;
+    $.each(this.storedKeywords, function(i, item){
+      $('.item-listing').append('<li style="color:' + that.storedKeywords[i]['color']+'">' + that.storedKeywords[i]['keyword']+': '+ that.storedKeywords[i]['value'] +'</li>');
+    });
+  },
   generatePieChart: function(){
     this.ctx = document.getElementById("myChart").getContext("2d");
     this.myNewChart = new Chart(this.ctx).Pie(this.storedKeywords); 
     this.printChartedData();
-  },
-  printChartedData: function(){
-    $.each(this.storedKeywords, function(i, item){
-      var keywordItem = this.storedKeywords[i]['keyword'];
-      var valueItem = this.storedKeywords[i]['value'];
-      var colorItem = this.storedKeywords[i]['color'];
-      $('.item-listing').append('<li style="color:'+colorItem+'">'+keywordItem+': '+ valueItem +'</li>')
-    });
   },
   generateChartData: function(){
     
