@@ -78,11 +78,7 @@ chartjsApp = {
         color: that.colorList[that.storedKeywords.length]  
       });
     });
-    console.log(this.storedKeywords);
-  },
-  generatePieChart: function(){
-    this.ctx = document.getElementById("myChart").getContext("2d");
-    this.myNewChart = new Chart(this.ctx).Pie(data); 
+    this.generatePieChart(this.storedKeywords);
   },
   checkObjectValue: function(){
     var that = this;
@@ -96,7 +92,20 @@ chartjsApp = {
       }
     });
   },
+  generatePieChart: function(){
+    this.ctx = document.getElementById("myChart").getContext("2d");
+    this.myNewChart = new Chart(this.ctx).Pie(this.storedKeywords); 
+    this.printChartedData();
+  },
+  printChartedData: function(){
+    $.each(this.storedKeywords, function(i, item){
+      var keywordItem = this.storedKeywords[i]['keyword'];
+      var valueItem = this.storedKeywords[i]['value'];
+      var colorItem = this.storedKeywords[i]['color'];
+      $('.item-listing').append('<li style="color:'+colorItem+'">'+keywordItem+': '+ valueItem +'</li>')
+    });
+  },
   generateChartData: function(){
-
+    
   }
 };
